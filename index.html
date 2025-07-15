@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>プロンプト生成ツール</title>
+  <title>プロンプト生成ツール（Gist版）</title>
   <style>
     body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
     input, button, textarea { font-size: 1em; margin-top: 0.5em; width: 100%; }
@@ -10,36 +10,35 @@
   </style>
 </head>
 <body>
-  <h1>大谷翔平チャンネルプロンプト生成ツール</h1>
+  <h1>プロンプト生成ツール</h1>
 
   <label for="titleInput">🎯 タイトルを入力：</label>
-  <input id="titleInput" type="text" placeholder="例：大谷翔平32号ホームラン！敵地サンフランシスコジャイアンツの地元でも大人気！" />
+  <input id="titleInput" type="text" placeholder="例：一寸法師" />
   <button onclick="generatePrompt()">🚀 プロンプト生成</button>
 
-  <label for="outputArea">📝 出力プロンプト（編集可）：</label>
-  <textarea id="outputArea"></textarea>
-  <button onclick="copyToClipboard()">📋 コピー</button>
+  <label for="outputArea">📝 出力プロンプト：</label>
+  <textarea id="outputArea" readonly></textarea>
 
   <p><a href="admin.html">🔐 管理者ページ</a></p>
 
   <script>
-    function loadTemplate() {
-      const saved = localStorage.getItem('prompt_template');
-      return saved || "# テンプレートが未設定です\nタイトル：{title}";
+    const gistId = 'YOUR_GIST_ID_HERE'; // GistのIDを後で差し替え
+
+    async function fetchTemplate() {
+      const res = await fetch(`https://gist.githubusercontent.com/YOUR_USERNAME/${gistId}/raw`);
+      return await res.text();
     }
 
-    function generatePrompt() {
+    async function generatePrompt() {
       const title = document.getElementById('titleInput').value.trim();
-      const template = loadTemplate();
-      const result = template.replaceAll('{title}', title);
-      document.getElementById('outputArea').value = result;
-    }
-
-    function copyToClipboard() {
-      const output = document.getElementById('outputArea');
-      output.select();
-      document.execCommand("copy");
-      alert("プロンプトをコピーしました！");
+      if (!title) return alert("タイトルを入力してください");
+      try {
+        const template = await fetchTemplate();
+        const result = template.replaceAll('{title}', title);
+        document.getElementById('outputArea').value = result;
+      } catch (err) {
+        document.getElementById('outputArea').value = 'テンプレートの取得に失敗しました';
+      }
     }
   </script>
 </body>
