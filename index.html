@@ -7,59 +7,25 @@
     body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
     input, button, textarea { font-size: 1em; margin-top: 0.5em; width: 100%; }
     textarea { height: 200px; }
-    .section { margin-top: 2em; border-top: 1px solid #ccc; padding-top: 1em; }
   </style>
 </head>
 <body>
-  <h1>プロンプト生成ツール</h1>
+  <h1>大谷翔平チャンネルプロンプト生成ツール</h1>
 
-  <div>
-    <label for="titleInput">🎯 タイトルを入力：</label>
-    <input id="titleInput" type="text" placeholder="例：一寸法師" />
+  <label for="titleInput">🎯 タイトルを入力：</label>
+  <input id="titleInput" type="text" placeholder="例：大谷翔平32号ホームラン！敵地サンフランシスコジャイアンツの地元でも大人気！" />
+  <button onclick="generatePrompt()">🚀 プロンプト生成</button>
 
-    <button onclick="generatePrompt()">🚀 プロンプト生成</button>
+  <label for="outputArea">📝 出力プロンプト（編集可）：</label>
+  <textarea id="outputArea"></textarea>
+  <button onclick="copyToClipboard()">📋 コピー</button>
 
-    <label for="outputArea">📝 出力プロンプト（編集可）：</label>
-    <textarea id="outputArea"></textarea>
-    <button onclick="copyToClipboard()">📋 コピー</button>
-  </div>
-
-  <div class="section">
-    <h2>⚙️ 管理者用テンプレート編集</h2>
-    <p><small>{title} の部分が入力タイトルに置き換わります</small></p>
-    <textarea id="templateEditor"></textarea>
-    <button onclick="saveTemplate()">💾 テンプレートを保存</button>
-    <button onclick="resetTemplate()">♻️ 初期テンプレに戻す</button>
-  </div>
+  <p><a href="admin.html">🔐 管理者ページ</a></p>
 
   <script>
-    const defaultTemplate = `# ギャル語昔話プロンプト
-
-YouTube台本用のギャル語昔話を作成します。
-タイトル：「{title}」
-- 渋谷ギャル「ゆいぴ」が語り手
-- 1カットずつ構成、ギャル語使用、画像プロンプト付き
-
-出力フォーマット：
-1. セリフ
-2. シーン説明
-3. AI画像プロンプト
-`;
-
     function loadTemplate() {
       const saved = localStorage.getItem('prompt_template');
-      return saved || defaultTemplate;
-    }
-
-    function saveTemplate() {
-      const newTemplate = document.getElementById('templateEditor').value;
-      localStorage.setItem('prompt_template', newTemplate);
-      alert("テンプレートを保存しました！");
-    }
-
-    function resetTemplate() {
-      document.getElementById('templateEditor').value = defaultTemplate;
-      localStorage.setItem('prompt_template', defaultTemplate);
+      return saved || "# テンプレートが未設定です\nタイトル：{title}";
     }
 
     function generatePrompt() {
@@ -75,10 +41,6 @@ YouTube台本用のギャル語昔話を作成します。
       document.execCommand("copy");
       alert("プロンプトをコピーしました！");
     }
-
-    window.onload = () => {
-      document.getElementById('templateEditor').value = loadTemplate();
-    };
   </script>
 </body>
 </html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>管理者ページ</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
+    input, button, textarea { font-size: 1em; margin-top: 0.5em; width: 100%; }
+    textarea { height: 200px; }
+    #adminPanel { display: none; }
+  </style>
+</head>
+<body>
+  <h1>🔐 管理者用テンプレート設定</h1>
+
+  <div id="loginPanel">
+    <label for="adminPass">パスワードを入力：</label>
+    <input type="password" id="adminPass" />
+    <button onclick="checkPassword()">ログイン</button>
+  </div>
+
+  <div id="adminPanel">
+    <p><small>{title} の部分が入力タイトルに置き換わります</small></p>
+    <textarea id="templateEditor"></textarea>
+    <button onclick="saveTemplate()">💾 テンプレートを保存</button>
+    <button onclick="resetTemplate()">♻️ 初期テンプレに戻す</button>
+    <p><a href="index.html">← ユーザー画面に戻る</a></p>
+  </div>
+
+  <script>
+    const defaultTemplate = `# ギャル語昔話プロンプト
+
+YouTube台本用のギャル語昔話を作成します。
+タイトル：「{title}」
+- 渋谷ギャル「ゆいぴ」が語り手
+- 1カットずつ構成、ギャル語使用、画像プロンプト付き
+
+出力フォーマット：
+1. セリフ
+2. シーン説明
+3. AI画像プロンプト
+`;
+
+    const PASSWORD = "admin123"; // 必要なら後で変更
+
+    function checkPassword() {
+      const input = document.getElementById('adminPass').value;
+      if (input === PASSWORD) {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('templateEditor').value = loadTemplate();
+      } else {
+        alert("パスワードが違います");
+      }
+    }
+
+    function loadTemplate() {
+      return localStorage.getItem('prompt_template') || defaultTemplate;
+    }
+
+    function saveTemplate() {
+      const newTemplate = document.getElementById('templateEditor').value;
+      localStorage.setItem('prompt_template', newTemplate);
+      alert("テンプレートを保存しました！");
+    }
+
+    function resetTemplate() {
+      document.getElementById('templateEditor').value = defaultTemplate;
+      localStorage.setItem('prompt_template', defaultTemplate);
+    }
+  </script>
+</body>
+</html>
