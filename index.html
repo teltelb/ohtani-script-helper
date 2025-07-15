@@ -18,6 +18,7 @@
 
   <label for="outputArea">📝 出力プロンプト：</label>
   <textarea id="outputArea" readonly></textarea>
+  <button onclick="copyPrompt()">📋 コピー</button>
 
   <p><a href="admin.html">🔐 管理者ページ</a></p>
 
@@ -38,6 +39,14 @@
       } catch (err) {
         document.getElementById('outputArea').value = 'テンプレートの取得に失敗しました';
       }
+    }
+
+    function copyPrompt() {
+      const output = document.getElementById('outputArea');
+      output.select();
+      document.execCommand('copy');
+      output.setSelectionRange(0, 0); // 選択解除
+      alert('プロンプトをコピーしました');
     }
   </script>
 </body>
