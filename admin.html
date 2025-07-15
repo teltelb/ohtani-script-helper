@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>管理者テンプレ編集（自動ID & トークン保存）</title>
+  <title>管理者テンプレ編集（パスワード付き）</title>
   <style>
     body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
     input, button, textarea { font-size: 1em; margin-top: 0.5em; width: 100%; }
@@ -25,11 +25,19 @@
   <p><a href="index.html">← ユーザー画面に戻る</a></p>
 
   <script>
-    async function getGistId() {
-      const res = await fetch("gist.json");
-      const json = await res.json();
-      return json.gist_id;
+    // パスワードロック
+    const ADMIN_PASSWORD = "admin123";
+    function checkPassword() {
+      const input = prompt("パスワードを入力してください");
+      if (input !== ADMIN_PASSWORD) {
+        alert("アクセス拒否されました");
+        window.location.href = "index.html";
+      }
     }
+    window.onload = checkPassword;
+
+    // GitHub連携
+    const gistId = "e6c38375711af054d9c7aa44fff00704";
 
     function saveToken() {
       const token = document.getElementById('token').value.trim();
@@ -38,7 +46,6 @@
     }
 
     async function loadGist() {
-      const gistId = await getGistId();
       const res = await fetch("https://api.github.com/gists/" + gistId);
       const data = await res.json();
       const fileKey = Object.keys(data.files)[0];
@@ -49,7 +56,6 @@
       const token = localStorage.getItem('gist_token');
       if (!token) return alert("トークンが保存されていません");
 
-      const gistId = await getGistId();
       const content = document.getElementById('content').value;
 
       const res = await fetch("https://api.github.com/gists/" + gistId, {
