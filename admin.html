@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>管理者テンプレ編集（Gist）</title>
+  <title>管理者テンプレ編集（自動ID & トークン保存）</title>
   <style>
     body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
     input, button, textarea { font-size: 1em; margin-top: 0.5em; width: 100%; }
@@ -10,35 +10,49 @@
   </style>
 </head>
 <body>
-  <h1>🔐 管理者テンプレート編集（GitHub Gist）</h1>
+  <h1>🔐 管理者テンプレート編集</h1>
 
   <label for="token">GitHubトークン：</label>
   <input type="password" id="token" placeholder="ghp_..." />
+  <button onclick="saveToken()">🔒 保存</button>
 
-  <label for="gistId">Gist ID：</label>
-  <input id="gistId" value="YOUR_GIST_ID_HERE" />
-
-  <label for="content">テンプレート編集：</label>
+  <label for="content">テンプレート内容：</label>
   <textarea id="content"></textarea>
 
   <button onclick="loadGist()">📥 Gist読込</button>
   <button onclick="saveGist()">💾 Gist保存</button>
 
+  <p><a href="index.html">← ユーザー画面に戻る</a></p>
+
   <script>
+    async function getGistId() {
+      const res = await fetch("gist.json");
+      const json = await res.json();
+      return json.gist_id;
+    }
+
+    function saveToken() {
+      const token = document.getElementById('token').value.trim();
+      localStorage.setItem('gist_token', token);
+      alert("トークンを保存しました（ローカルのみ）");
+    }
+
     async function loadGist() {
-      const id = document.getElementById('gistId').value.trim();
-      const res = await fetch(`https://api.github.com/gists/${id}`);
+      const gistId = await getGistId();
+      const res = await fetch("https://api.github.com/gists/" + gistId);
       const data = await res.json();
       const fileKey = Object.keys(data.files)[0];
       document.getElementById('content').value = data.files[fileKey].content;
     }
 
     async function saveGist() {
-      const token = document.getElementById('token').value.trim();
-      const id = document.getElementById('gistId').value.trim();
+      const token = localStorage.getItem('gist_token');
+      if (!token) return alert("トークンが保存されていません");
+
+      const gistId = await getGistId();
       const content = document.getElementById('content').value;
 
-      const res = await fetch(`https://api.github.com/gists/${id}`, {
+      const res = await fetch("https://api.github.com/gists/" + gistId, {
         method: 'PATCH',
         headers: {
           'Authorization': `token ${token}`,

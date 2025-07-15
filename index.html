@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>プロンプト生成ツール（Gist版）</title>
+  <title>プロンプト生成ツール（Gist自動ID読込）</title>
   <style>
     body { font-family: sans-serif; padding: 2em; max-width: 800px; margin: auto; }
     input, button, textarea { font-size: 1em; margin-top: 0.5em; width: 100%; }
@@ -22,10 +22,15 @@
   <p><a href="admin.html">🔐 管理者ページ</a></p>
 
   <script>
-    const gistId = 'YOUR_GIST_ID_HERE'; // GistのIDを後で差し替え
+    async function getGistId() {
+      const res = await fetch("gist.json");
+      const json = await res.json();
+      return json.gist_id;
+    }
 
-    async function fetchTemplate() {
-      const res = await fetch(`https://gist.githubusercontent.com/YOUR_USERNAME/${gistId}/raw`);
+    async function fetchTemplate(gistId) {
+      const url = `https://gist.githubusercontent.com/teltelb/${gistId}/raw`;
+      const res = await fetch(url);
       return await res.text();
     }
 
@@ -33,7 +38,8 @@
       const title = document.getElementById('titleInput').value.trim();
       if (!title) return alert("タイトルを入力してください");
       try {
-        const template = await fetchTemplate();
+        const gistId = await getGistId();
+        const template = await fetchTemplate(gistId);
         const result = template.replaceAll('{title}', title);
         document.getElementById('outputArea').value = result;
       } catch (err) {
